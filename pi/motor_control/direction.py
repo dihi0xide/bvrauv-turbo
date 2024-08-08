@@ -18,7 +18,7 @@ directions = {
 }
 
 
-def to_direction(upwards: bool, forwards: bool, leftwards: bool) -> int:
+def to_direction(upwards, forwards, leftwards):
     """Parameters are booleans. True-true-true = VFL, false-false-false=HBR"""
     up = "V" if upwards else "H"
     forward = "F" if forwards else "B"
@@ -26,6 +26,6 @@ def to_direction(upwards: bool, forwards: bool, leftwards: bool) -> int:
     return directions[up + forward + side]
 
 
-def direction(key: str) -> int:
+def direction(key):
     """Get the direction directly from a string, e.g. 'VFL'"""
     return directions[key]

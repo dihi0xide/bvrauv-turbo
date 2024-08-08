@@ -1,5 +1,4 @@
 from pi.motor_control.pid.PID import PID
-from typing import Tuple
 
 # This code is to fix the issue that a lot of our motors have a minimum speed, stopping us
 # from correcting at small turns and leading to constant overshooting. It does this by having
@@ -14,11 +13,11 @@ from typing import Tuple
 
 
 class DifferentialPID:
-    def __init__(self, pid: PID, motor_min: float):
-        self.pid: PID = pid
-        self.min: float = motor_min
+    def __init__(self, pid, motor_min):
+        self.pid = pid
+        self.min = motor_min
 
-    def signal(self, current: float) -> Tuple[float, float]:
+    def signal(self, current):
         """
         Returns a tuple (x, y) where x is the speed to turn the two diagonal motors at,
         and y is the speed to turn the other two diagonal motors to slow down if the first two

@@ -1,5 +1,4 @@
 import time
-from typing import Optional
 
 # A PID controller is a piece of code which tries to bring a chaotic system to a specific
 # value; eg. bring a sub to a specific depth or angle, manuevering against the chaotic water.
@@ -19,7 +18,7 @@ from typing import Optional
 
 
 class PID:
-    def __init__(self, proportional: float, integral: float, derivative: float, wanted: float, interval: Optional[float] = None):
+    def __init__(self, proportional, integral, derivative, wanted, interval = None):
         """
         The first three parameters represent the weight of their respect part of the PID;
         Kp, Ki, and Kd. Wanted is the value the PID will attempt to reach, this cannot be
@@ -33,24 +32,24 @@ class PID:
         # good in case of potential lag. if set, it will assume every call is `interval`
         # seconds apart. it's good for testing, but in a real scenario use timestamp
 
-        self.Kp: float = proportional
-        self.Ki: float = integral
-        self.Kd: float = derivative
+        self.Kp = proportional
+        self.Ki = integral
+        self.Kd = derivative
 
-        self.wanted: float = wanted
+        self.wanted = wanted
 
-        self.interval: float = interval
+        self.interval = interval
 
-        self.integral: float = 0
+        self.integral = 0
         # integral represents the total error
 
-        self.prev: float = 0
+        self.prev = 0
         # prev represents the previous error
 
-        self.prevTime: float = time.time()
+        self.prevTime = time.time()
         # only used if interval is unset
 
-    def signal(self, current: float) -> float:
+    def signal(self, current):
         """
         Get the control signal given the `current` value
         """

@@ -9,11 +9,11 @@ from pi.motor_control.motor_packet import MotorPacket
 
 
 class MotorControl:
-    def __init__(self, port: str):
+    def __init__(self, port):
 
-        self.port: str = port
-        self.serial: PortController = PortController(port)
+        self.port = port
+        self.serial = PortController(port)
 
-    def send(self, packet: MotorPacket) -> None:
+    def send(self, packet):
         """Send a packet of commands over this port"""
         self.serial.write(packet.toString())

@@ -1,4 +1,3 @@
-from typing import Optional, Tuple, Dict
 from pi.motor_control.direction import direction
 
 # apply to motors, as some are reversed. applied at .toString()
@@ -18,33 +17,33 @@ encoded_direction_fix = {direction(key): value for key, value in motor_reverse_f
 
 # A class to choose which motors to enable/disable when sending a message
 class MotorPacket:
-    def __init__(self, commands: Optional[Dict[int, float]] = None):
+    def __init__(self, commands = None):
         """
         `commands` is a list of tuples, each of which contains
         (magnitude (to be sent to arduino), motor (in direction format))
         If unset, the packet will be empty
         """
-        self.commands: Dict[int, float] = {}
+        self.commands = {}
 
         if commands is not None:
             self.setCommands(commands)
 
-    def getCommands(self) -> Dict[int, float]:
+    def getCommands(self):
         return self.commands
 
-    def setCommands(self, commands: Dict[int, float]) -> None:
+    def setCommands(self, commands):
         """
         Set the full command list. `commands` is in the same format as in __init__
         """
         self.commands = commands.copy()
 
-    def addCommand(self, command: Tuple[int, float]) -> None:
+    def addCommand(self, command):
         """
         Add a command. `command` is a tuple in the same format as in __init__
         """
         self.commands[command[0]] = command[1]
 
-    def toString(self) -> str:
+    def toString(self):
         string_builder = []
 
         for motor, magnitude in self.commands.items():
@@ -62,7 +61,7 @@ class MotorPacket:
         return MotorPacket(sum_commands)
 
 
-def all_motors_packet(speeds: Tuple[float, ...]) -> MotorPacket:
+def all_motors_packet(speeds):
     """
     Sends commands to all motors, in the format\n
     (VFL, VFR, VBL, VBR, HFL, HFR, HBL, HBR)\n

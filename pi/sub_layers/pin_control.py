@@ -8,22 +8,22 @@ from pi.sub_layers.abstract_sub import AUV
 
 
 class PinControl:
-    def __init__(self, abstract_sub: AUV, motor_port: str, imu_port: str, imu_baud: int, depth_bus: int):
+    def __init__(self, abstract_sub, motor_port, imu_port, imu_baud, depth_bus):
         """
         A wrapper class for an AUV (abstract sub) to access sensors and motors, using
         ports and I2C
         """
-        self.sub: AUV = abstract_sub
-        self.arduino: MotorControl = MotorControl(motor_port)
-        self.imu: VectorNavIMU = VectorNavIMU(imu_port, imu_baud)
-        self.depth_sensor: DepthSensor = DepthSensor(depth_bus)
+        self.sub = abstract_sub
+        self.arduino = MotorControl(motor_port)
+        self.imu = VectorNavIMU(imu_port, imu_baud)
+        self.depth_sensor = DepthSensor(depth_bus)
 
-    def update_data(self) -> None:
+    def update_data(self):
         """Update data based on current sensor readings"""
         self.sub.set_depth(self.depth_sensor.get_depth())
         self.sub.set_heading(self.imu.get_heading())
         self.sub.set_heading_diff(self.imu.angle_to(self.sub.wanted_heading))
 
-    def update_motors(self) -> None:
+    def update_motors(self):
         """Send a packet to update all motors"""
         self.arduino.send(all_motors_packet(self.sub.get_motors()))
