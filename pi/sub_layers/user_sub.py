@@ -97,5 +97,6 @@ class UserSub:
         stopped after moving.
         """
         self.set_wanted_speed(speed)
+
         time.sleep(seconds)
         return self.stop_motion()

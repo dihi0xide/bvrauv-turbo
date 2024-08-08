@@ -7,14 +7,14 @@
 
 # haha bad code
 directions = {
-    "VFL": 0,
-    "VFR": 1,
-    "VBL": 2,
-    "VBR": 3,
-    "HFL": 4,
-    "HFR": 5,
-    "HBL": 6,
-    "HBR": 7
+    "VFL": 6,
+    "VFR": 7,
+    "VBL": 4,
+    "VBR": 5,
+    "HFL": 8,
+    "HFR": 9,
+    "HBL": 2,
+    "HBR": 3
 }
 
 

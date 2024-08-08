@@ -26,7 +26,7 @@ class MotorPacket:
         self.commands = {}
 
         if commands is not None:
-            self.setCommands(commands)
+            self.commands = {i: command}
 
     def getCommands(self):
         return self.commands

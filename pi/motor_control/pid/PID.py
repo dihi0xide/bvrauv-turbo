@@ -1,7 +1,7 @@
 import time
 
 # A PID controller is a piece of code which tries to bring a chaotic system to a specific
-# value; eg. bring a sub to a specific depth or angle, manuevering against the chaotic water.
+# value; eg. bring a sub to a specific depth or angle, maneuvering against the chaotic water.
 # it is based on three parts; one Proportional, Integral, and Derivative (P-I-D). The final
 # output signal is a weighted sum of the three parts. To find the proportional piece, you just
 # take the error between the current value and the wanted value. The integral piece is the sum
