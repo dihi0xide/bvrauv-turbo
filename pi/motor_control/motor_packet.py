@@ -1,4 +1,4 @@
-from pi.motor_control.direction import direction
+from direction import direction
 
 # apply to motors, as some are reversed. applied at .toString()
 motor_reverse_fix = {

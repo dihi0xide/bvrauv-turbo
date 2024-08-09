@@ -40,6 +40,14 @@ class VectorNavIMU:
         # return 1.0
         raise NotImplementedError()
 
+    def get_average_heading(self, sample_count, interval=0.1):
+        """Get the average heading over some period, useful for calibrating heading when beginning"""
+        samples = []
+        for i in range(sample_count):
+            samples.append(self.get_heading())
+            time.sleep(interval)
+        return sum(samples) / sample_count
+
 
 # vn = VectorNavIMU('COM3', 921600)
 #

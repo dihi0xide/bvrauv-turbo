@@ -1,5 +1,6 @@
 from pi.port_controller import PortController
-from pi.motor_control.motor_packet import MotorPacket
+from motor_packet import MotorPacket
+from direction import directions
 
 # A wrapper class to communicate with the arduino motor controller
 
@@ -20,3 +21,9 @@ class MotorControl:
         self.serial.write(packet_string)
         if debug:
             print(packet_string)
+
+    def kill(self):
+        commands = []
+        for direction in directions.values():
+            commands.append((0, direction))
+        self.serial.write(MotorPacket(commands).toString())

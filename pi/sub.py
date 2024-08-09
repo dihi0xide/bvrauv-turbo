@@ -1,5 +1,6 @@
-from pi.motor_control.pid.PID import PID
-from pi.motor_control.pid.differential_PID import DifferentialPID
+from motor_control.pid.PID import PID
+from motor_control.pid.differential_PID import DifferentialPID
+from motor_control.pid.PID_bounds import BoundedPID
 from motor_control.motor_packet import MotorPacket
 from motor_control.direction import direction
 # An abstract model of a sub which contains all the needed PIDs and other low-level details
@@ -46,9 +47,10 @@ class AUV:
     def end_depth_pid(self):
         self.depth_pid = None
 
-    def begin_heading_pid(self, Kp, Ki, Kd, wanted_heading, motor_min):
+    def begin_heading_pid(self, pid, wanted_heading):
         self.wanted_heading = wanted_heading
-        self.heading_pid = DifferentialPID(PID(Kp, Ki, Kd, wanted_heading), motor_min)
+        # self.heading_pid = DifferentialPID(PID(Kp, Ki, Kd, wanted_heading), motor_min)
+        self.heading_pid = pid
 
     def end_heading_pid(self):
         self.heading_pid = None
@@ -67,7 +69,7 @@ class AUV:
         (Depth PID, heading PID, forward speed)
         """
 
-        vertical_all = -1
+        vertical_all = 0
         horizontal_all = 0
 
         if self.depth_pid is not None and self.depth_sensor:
@@ -76,8 +78,7 @@ class AUV:
             vertical_all += signal
             if depth_debug:
                 print(signal, depth)
-
-
+                #print(depth, self.depth_sensor.get_depth(), self.depth_sensor.initial)
         if self.wanted_speed is not None:
             horizontal_all += self.wanted_speed
 
@@ -85,14 +86,10 @@ class AUV:
         horizontal_motors = {"HBL": horizontal_all, "HBR": horizontal_all, "HFL": horizontal_all, "HFR": horizontal_all}
 
         if self.heading_pid is not None and self.imu is not None and self.wanted_heading is not None:
-            heading_motors = self.heading_pid.signal(self.imu.angle_to(self.wanted_heading))  # get heading pid speed (x, y)
-            for motor in ["HBL", "HFR"]:
-                horizontal_motors[motor] += heading_motors[0]
-
-            for motor in ["HFL", "HBR"]:
-                horizontal_motors[motor] += heading_motors[1]
-
-            # add to diagonals
+            heading_signal = self.heading_pid.signal(self.imu.angle_to(self.wanted_heading))  # get heading pid speed (x, y)
+            heading_motors = ["HFR", "HBR"] if heading_signal >= 0 else ["HFL", "HBL"]
+            for motor in heading_motors:
+                horizontal_motors[motor] += abs(heading_signal)
 
         if self.motor_controller is not None:
             command_list = []

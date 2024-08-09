@@ -7,15 +7,16 @@ class BoundedPID:
         self.allow_negative = allow_negative
 
     def signal(self, current):
-        sign = 1 if (current >= 0 or self.allow_negative) else -1
+        signal = self.PID.signal(current)
+        sign = 1 if (signal >= 0 or not self.allow_negative) else -1
 
         if self.allow_negative:
-            current = abs(current)
+            signal = abs(signal)
 
-        if current > self.max:
-            current = self.max
+        if signal > self.max:
+            signal = self.max
 
-        if self.min > current:
-            current = self.min
+        if self.min > signal:
+            signal = self.min
 
-        return self.PID.signal(current * sign)
+        return signal * sign
