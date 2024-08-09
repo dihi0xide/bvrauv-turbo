@@ -1,6 +1,7 @@
 from pi.motor_control.pid.PID import PID
 from pi.motor_control.pid.differential_PID import DifferentialPID
-from motor_control.direction import horizontal, vertical, direction
+from motor_control.motor_packet import MotorPacket
+from motor_control.direction import direction
 # An abstract model of a sub which contains all the needed PIDs and other low-level details
 # to control the sub.
 
@@ -60,18 +61,22 @@ class AUV:
         self.wanted_speed = None
 
     # TODO this should return a list with motor labels rather than numbers, eg. ["VFL", 0.5]
-    def update_motors(self):
+    def update_motors(self, *, depth_debug=False):
         """
         Sends a command to the sub for all set pieces of this sub object
         (Depth PID, heading PID, forward speed)
         """
 
-        vertical_all = 0
+        vertical_all = -1
         horizontal_all = 0
 
         if self.depth_pid is not None and self.depth_sensor:
             depth = self.depth_sensor.get_relative_depth() if self.use_relative_depth else self.depth_sensor.get_depth()
-            vertical_all += self.depth_pid.signal(depth)
+            signal = self.depth_pid.signal(depth)
+            vertical_all += signal
+            if depth_debug:
+                print(signal, depth)
+
 
         if self.wanted_speed is not None:
             horizontal_all += self.wanted_speed
@@ -91,10 +96,11 @@ class AUV:
 
         if self.motor_controller is not None:
             command_list = []
+
             for motor, magnitude in horizontal_motors.items():
-                command_list.append((magnitude, motor))
+                command_list.append((magnitude, direction(motor)))
 
             for motor, magnitude in vertical_motors.items():
-                command_list.append((magnitude, motor))
+                command_list.append((magnitude, direction(motor)))
 
-            self.motor_controller.send(command_list)
+            self.motor_controller.send(MotorPacket(command_list))

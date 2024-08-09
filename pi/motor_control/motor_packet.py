@@ -17,7 +17,7 @@ encoded_direction_fix = {direction(key): value for key, value in motor_reverse_f
 
 # A class to choose which motors to enable/disable when sending a message
 class MotorPacket:
-    def __init__(self, commands = None):
+    def __init__(self, commands=None):
         """
         `commands` is a list of tuples, each of which contains
         (magnitude (to be sent to arduino), motor (in direction format))
@@ -26,7 +26,7 @@ class MotorPacket:
         self.commands = {}
 
         if commands is not None:
-            self.commands = {i: command}
+            self.commands = {motor: mag for mag, motor in commands}
 
     def getCommands(self):
         return self.commands

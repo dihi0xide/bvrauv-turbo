@@ -1,5 +1,6 @@
 from motor_control.pid.PID import PID
 from motor_control.pid.PID_bounds import BoundedPID
+from motor_control.motor_serial import MotorControl
 from sub import AUV
 import time
 
@@ -12,9 +13,9 @@ max_speed = 1
 min_speed = 0.1
 update_interval = 0.1
 
-initial_wait = 15
+initial_wait = 2
 
-print_debug = True
+print_depth_debug = True
 
 # Depth PID #
 Dp = 0.6
@@ -29,7 +30,7 @@ sub = AUV()
 print("Begun connecting devices...")
 # vn = VectorNavIMU('/dev/ttyUSB0', 921600)
 # depth_sensor = DepthSensor()
-# motor_controller = MotorControl('/dev/ttyUSB1')
+motor_controller = MotorControl('/dev/ttyUSB1')
 print("Finished connecting!")
 
 print("Begun generating PIDs...")
@@ -43,7 +44,7 @@ print("Finished calibrating!")
 print("Begun connecting to sub framework...")
 # sub.connect_depth_sensor(depth_sensor, use_relative=True)
 # sub.begin_depth_pid(depth_pid)
-# sub.connect_arduino(motor_controller)
+sub.connect_arduino(motor_controller)
 print("Finished connecting!")
 
 initial_time = time.time()
@@ -53,4 +54,4 @@ for seconds in range(initial_wait, 0, -1):
 
 while True:
     sub.update_motors()
-    time.sleep(update_interval)
+    time.sleep(update_interval, depth_debug=True)
