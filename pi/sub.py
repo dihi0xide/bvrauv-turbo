@@ -1,5 +1,6 @@
 from pi.motor_control.pid.PID import PID
 from pi.motor_control.pid.differential_PID import DifferentialPID
+from motor_control.direction import horizontal, vertical, direction
 # An abstract model of a sub which contains all the needed PIDs and other low-level details
 # to control the sub.
 
@@ -11,11 +12,11 @@ class AUV:
         self.depth_sensor = None
         self.motor_controller = None
 
+        self.use_relative_depth = False
+
         self.heading_pid = None
         self.depth_pid = None
 
-        self.heading = None
-        self.depth = None
         self.wanted_heading = None
         self.wanted_speed = None
 
@@ -37,8 +38,9 @@ class AUV:
     def disconnect_arduino(self):
         self.motor_controller = None
 
-    def begin_depth_pid(self, Kp, Ki, Kd, wanted_depth):
-        self.depth_pid = PID(Kp, Ki, Kd, wanted_depth)
+    def begin_depth_pid(self, depth_pid, use_relative=False):
+        self.depth_pid = depth_pid
+        self.use_relative_depth = use_relative
 
     def end_depth_pid(self):
         self.depth_pid = None
@@ -58,23 +60,41 @@ class AUV:
         self.wanted_speed = None
 
     # TODO this should return a list with motor labels rather than numbers, eg. ["VFL", 0.5]
-    def get_motors(self):
+    def update_motors(self):
         """
-        Gets the calculated speed each of the motors should travel at, in the form \n
-        (VFL, VFR, VBL, VBR, HFL, HFR, HBL, HBR) \n
-        (eg. HBR = horizontal-back-right, VFL = vertical-front-left)
+        Sends a command to the sub for all set pieces of this sub object
+        (Depth PID, heading PID, forward speed)
         """
 
-        vertical_motors = [0] * 4
-        horizontal_motors = [0] * 4
+        vertical_all = 0
+        horizontal_all = 0
+
+        if self.depth_pid is not None and self.depth_sensor:
+            depth = self.depth_sensor.get_relative_depth() if self.use_relative_depth else self.depth_sensor.get_depth()
+            vertical_all += self.depth_pid.signal(depth)
+
+        if self.wanted_speed is not None:
+            horizontal_all += self.wanted_speed
+
+        vertical_motors = {"VBL": vertical_all, "VBR": vertical_all, "VFL": vertical_all, "VFR": vertical_all}
+        horizontal_motors = {"HBL": horizontal_all, "HBR": horizontal_all, "HFL": horizontal_all, "HFR": horizontal_all}
 
         if self.heading_pid is not None and self.imu is not None and self.wanted_heading is not None:
             heading_motors = self.heading_pid.signal(self.imu.angle_to(self.wanted_heading))  # get heading pid speed (x, y)
+            for motor in ["HBL", "HFR"]:
+                horizontal_motors[motor] += heading_motors[0]
 
-            for i in range(4):
-                horizontal_motors[i] += heading_motors[i % 2]
-                # add to diagonals
+            for motor in ["HFL", "HBR"]:
+                horizontal_motors[motor] += heading_motors[1]
 
+            # add to diagonals
 
+        if self.motor_controller is not None:
+            command_list = []
+            for motor, magnitude in horizontal_motors.items():
+                command_list.append((magnitude, motor))
 
-        return tuple(vertical_motors + horizontal_motors)
+            for motor, magnitude in vertical_motors.items():
+                command_list.append((magnitude, motor))
+
+            self.motor_controller.send(command_list)

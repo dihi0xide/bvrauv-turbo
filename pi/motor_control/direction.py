@@ -17,6 +17,9 @@ directions = {
     "HBR": 3
 }
 
+vertical = ["VFL", "VFR", "VBL", "VBR"]
+horizontal = ["HFL", "HFR", "HBL", "HBR"]
+
 
 def to_direction(upwards, forwards, leftwards):
     """Parameters are booleans. True-true-true = VFL, false-false-false=HBR"""
@@ -29,3 +32,10 @@ def to_direction(upwards, forwards, leftwards):
 def direction(key):
     """Get the direction directly from a string, e.g. 'VFL'"""
     return directions[key]
+
+
+def key_from_direction(direction_to_find):
+    """Gets the key (e.g. HFL) from the direction (e.g. 0)"""
+    for key, loop_direction in directions:
+        if loop_direction == direction_to_find:
+            return key

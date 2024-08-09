@@ -14,6 +14,9 @@ class MotorControl:
         self.port = port
         self.serial = PortController(port)
 
-    def send(self, packet):
+    def send(self, packet, debug=False):
         """Send a packet of commands over this port"""
-        self.serial.write(packet.toString())
+        packet_string = packet.toString()
+        self.serial.write(packet_string)
+        if debug:
+            print(packet_string)
