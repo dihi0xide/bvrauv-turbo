@@ -1,4 +1,4 @@
-from pi.motor_control.pid.PID import PID
+from motor_control.pid.PID import PID
 
 # This code is to fix the issue that a lot of our motors have a minimum speed, stopping us
 # from correcting at small turns and leading to constant overshooting. It does this by having

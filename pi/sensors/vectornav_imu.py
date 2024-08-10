@@ -1,6 +1,6 @@
 import time
 
-from pi.port_controller import PortController
+from port_controller import PortController
 import vnpy
 
 

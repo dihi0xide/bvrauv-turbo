@@ -1,7 +1,8 @@
 from sub_layers.abstract_sub import AUV
 from sub_layers.pin_control import PinControl
 from sub_layers.user_sub import UserSub
-
+from motor_control.motor_packet import MotorPacket
+import time
 
 if __name__ == '__main__':
 
@@ -18,9 +19,9 @@ if __name__ == '__main__':
                 Ri=0.0,
                 Rd=0.1
             ),
-            motor_port='/dev/ttyUSB0',  # example port
+            motor_port='/dev/ttyUSB1',  # example port
             depth_bus=1,  # I2C bus
-            imu_port='/dev/ttyUSB1',  # another port
+            imu_port='/dev/ttyUSB0',  # another port
             imu_baud=921600
         ),
         Fp=0.5,
@@ -29,4 +30,8 @@ if __name__ == '__main__':
         max_stop_speed=0.1
     )
 
-    sub.move_time(10, 10)
+    time.sleep(15)
+    print('test')
+    sub.pin_control.arduino.send(MotorPacket([(0.1, 4), (0.1, 5), (0.1, 6), (0.1, 7)]))
+    time.sleep(3)
+    sub.pin_control.arduino.send(MotorPacket([(0, 4), (0, 5), (0, 6), (0, 7)]))

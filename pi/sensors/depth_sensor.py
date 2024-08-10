@@ -1,4 +1,4 @@
-import pi.ms5837 as ms5837
+import ms5837 as ms5837
 import time
 
 

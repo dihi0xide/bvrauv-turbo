@@ -1,6 +1,6 @@
-from pi.port_controller import PortController
-from motor_packet import MotorPacket
-from direction import directions
+from port_controller import PortController
+from motor_control.motor_packet import MotorPacket
+from motor_control.direction import directions
 
 # A wrapper class to communicate with the arduino motor controller
 

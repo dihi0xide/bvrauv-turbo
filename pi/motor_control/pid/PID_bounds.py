@@ -1,3 +1,6 @@
+# TODO make sure this can be safely removed and then remove it; bounds should be implemented
+# TODO per motor, not per PID
+
 class BoundedPID:
     def __init__(self, PID, max, min, allow_negative=True):
         """Allow negative means whether to reflect the bounds across 0"""
@@ -5,6 +8,7 @@ class BoundedPID:
         self.max = max
         self.min = min
         self.allow_negative = allow_negative
+        raise DeprecationWarning()
 
     def signal(self, current):
         signal = self.PID.signal(current)
