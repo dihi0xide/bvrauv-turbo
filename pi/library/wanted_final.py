@@ -1,10 +1,15 @@
 from auv import AUV
+from sensor_interface import DepthInterface, ImuInterface, SensorInterface
+from motor_controller import MotorController, Motor
+import numpy as np
+import quaternion # TODO find a better quaternion library 
+
+from inertia import InertiaBuilder, Cuboid, HollowCylinder
 
 
 
 #TODO
 # -- redo velocity state
-# -- inertia builder
 # -- tasks
 # -- test environment
 
@@ -14,28 +19,30 @@ from auv import AUV
 
 class DepthSensor(DepthInterface):
 
-    def __init__():
-        # initialize, connect to sensor, etc...
-        pass
-
-    @override
-    def get_depth():
+    def get_depth(self):
         return 0.5
+    
+    def initialize(self):
+        pass
 
 class IMU(ImuInterface):
-    def __init__():
-        # initialize, connect to sensor, etc...
-        pass
 
-    @override
-    def get_accelerations():
+    def get_accelerations(self):
         return [0.0, 0.0, 0.0]
 
-    @override
-    def get_direction():
+    def get_direction(self):
         return np.quaternion([1, 0, 0, 0])
+    
+    def get_rotation(self):
+        pass
+
+    def initialize(self):
+        pass
 
 def emergency_kill():
+    pass
+
+def set_pin(pin, val):
     pass
 
 def set_motor(id, speed):
@@ -45,7 +52,7 @@ anchovy = AUV(
     motor_controller=MotorController(
         
         inertia=InertiaBuilder(
-            inertia.HollowCylinder(
+            HollowCylinder(
                 mass=5, 
                 radius=3,
                 height=10, 
@@ -53,7 +60,7 @@ anchovy = AUV(
                 facing=np.array([0,1,0])
                 ),
             
-            inertia.HollowCylinder(
+            HollowCylinder(
                 mass=2, 
                 radius=3,
                 height=10, 
@@ -61,7 +68,7 @@ anchovy = AUV(
                 facing=np.array([0,1,0])
                 ),
 
-            inertia.HollowCylinder(
+            HollowCylinder(
                 mass=2, 
                 radius=3,
                 height=10, 
@@ -69,13 +76,13 @@ anchovy = AUV(
                 facing=np.array([0,1,0])
                 ),
 
-            inertia.SolidRectangle(
+            Cuboid(
                 mass=3, 
                 size=np.array([12, 2.5, 12]), 
                 center=np.array([0,0,0]),
                 normal=np.array([0,1,0])
                 ),
-        ).build(),
+        ).moment_of_inertia(),
 
         motors=[
             Motor(np.array([1, 0, 1]), np.array([5, 0, 5]), lambda x: set_motor(0, x)),
@@ -87,14 +94,13 @@ anchovy = AUV(
             Motor(np.array([0, 1, 0]), np.array([4, 0, -4], lambda x: set_motor(5, x))),
             Motor(np.array([0, 1, 0]), np.array([-4, 0, -4], lambda x: set_motor(6, x))),
             Motor(np.array([0, 1, 0]), np.array([-4, 0, 4], lambda x: set_motor(7, x))),
-        ],
-        motor_min=0.1,
+        ]
     ),
 
     sensors=SensorInterface(
         imu=IMU(),
-        depth_sensor=DepthSensor()
-    )
+        depth=DepthSensor()
+    ),
 
     logging=False,      # whether to log to a file
     console=False,      # whether to log to the console
@@ -119,40 +125,3 @@ mission = Path(
 )                                                       # end of path, motors killed
 
 anchovy.travel_path(mission)
-
-
-# try:
-#     anchovy.travel_path(mission)
-#     log_print("Path travelled succesfully.")
-# except:
-#     log_print(f"Error during path; saving logs to {current_file}")
-
-# finally:
-
-#     if anchovy.killed():
-#         log_print("Sub is killed, ending.")
-    
-#     else:
-#         kill_methods = [
-#             ("kill", anchovy.kill),
-#             # kill through sub interface, uses full library to send kill. should always work
-
-#             ("emergency kill", anchovy.emergency_kill), 
-#             # in case that doesn't work (maybe through some library bug), try just 
-#             # directly making a packet object and sending it
-
-#             ("backup kill", anchovy.backup_kill)
-#             # last resort, directly control pins and send kill commands. doesn't go through library
-#             # at all, just sends pin commands
-#             ]
-        
-#         for method_name, method in kill_methods:
-#             log_print(f"Attempting {method_name}...")
-#             if method():
-#                 log_print(f"{method_name.capitalize()} succeeded.")
-#                 break
-#             else:
-#                 log_print(f"{method_name.capitalize()} failed.")
-#         else:
-#             log_print("All kills ineffective. Manual intervention required.")
-

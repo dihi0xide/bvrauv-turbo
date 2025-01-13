@@ -21,13 +21,13 @@ class Logger:
         if(self.file):
             os.makedirs("logs", exist_ok=True)
             self.location = f"logs/{time.asctime().replace(" ", "-")}"
-            self.stream = open(self.location, "w")
+            self.stream = open(self.location, "w", encoding="utf-8")
 
         self.log("   date   h:m:s:microsecond   source        level       message\n", info=False)
 
     def log(self, message: str, level: LogLevel = LogLevel.INFO, source: str = " GENERAL ", info: bool = True): 
         if(self.dead):
-            self.stream = open(self.location, "w")
+            self.stream = open(self.location, "w", encoding="utf-8")
             self.dead = False
 
 
@@ -42,9 +42,9 @@ class Logger:
 
         if(level == LogLevel.ERROR):
             message = "\n!!!ERROR!!!\n" + message + "\n!!!ERROR!!!\n"
-            
 
-        if(self.console): 
+
+        if(self.console):
             print(message)
 
         if(self.file):
@@ -58,7 +58,7 @@ class Logger:
 
     def create_sourced_logger(self, source):
         if(self.dead):
-            self.stream = open(self.location, "w")
+            self.stream = open(self.location, "w", encoding="utf-8")
             self.dead = False
 
         if len(source) <= 9:

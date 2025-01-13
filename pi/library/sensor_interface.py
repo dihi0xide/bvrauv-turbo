@@ -4,22 +4,22 @@ from abc import ABC, abstractmethod
 # The abstract interface for interacting with the hardware; this should be
 # extended and registered into the auv
 
-class ImuInterace(ABC):
+class ImuInterface(ABC):
 
     def __init__(self):
         super().__init__()
-        self.log = lambda str: print(str)
+        self.log = lambda str, level=None: print(str)
 
     @abstractmethod
-    def get_accelerations() -> np.ndarray:
+    def get_accelerations(self) -> np.ndarray:
         pass
 
     @abstractmethod
-    def get_rotation() -> np.quaternion:
+    def get_rotation(self) -> np.quaternion:
         pass
 
     @abstractmethod
-    def initialize() -> None:
+    def initialize(self) -> None:
         pass
 
 class DepthInterface(ABC):
@@ -29,17 +29,17 @@ class DepthInterface(ABC):
         self.log = lambda str: print(str)
     
     @abstractmethod
-    def get_depth() -> float:
+    def get_depth(self) -> float:
         pass
 
     @abstractmethod
-    def initialize() -> None:
+    def initialize(self) -> None:
         pass
 
 class SensorInterface:
 
-    def __init__(self, *, imu: ImuInterace, depth: DepthInterface):
-        self.imu: ImuInterace = imu
+    def __init__(self, *, imu: ImuInterface, depth: DepthInterface):
+        self.imu: ImuInterface = imu
         self.depth: DepthInterface = depth
         self.log = lambda str: print(str)
 

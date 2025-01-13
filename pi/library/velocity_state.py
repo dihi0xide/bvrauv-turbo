@@ -3,7 +3,7 @@ import numpy as np
 
 class VelocityState:
     
-    def from_vector(vec: np.ndarray) -> Self:
+    def from_vector(self, vec: np.ndarray) -> Self:
         """
         Create a velocity state to follow a given 3d vector. Does not affect rotation.\n
         The magnitude controls the speed of the sub. Refer to your motor definitions for the speeds.
@@ -11,7 +11,7 @@ class VelocityState:
         scaled_vec = (vec / vec.max()) * speed
         # this will bring the highest motor to 1 and scale all other motors equally, and then
         # multiply them all by the set speed
-
+        
         return VelocityState( 
             forward = scaled_vec[0],
             vertical = scaled_vec[1],

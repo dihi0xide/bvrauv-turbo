@@ -1,20 +1,21 @@
 from abc import ABC, abstractmethod
+from typing import Tuple
 
-from motor_registry import MotorController
+from pi.library.motor_controller import MotorController
 
 
 class Task(ABC):
 
     @property
     @abstractmethod
-    def name() -> str:
+    def name(self) -> str:
         pass
 
     @abstractmethod
-    def update(motors: MotorController) -> None:
+    def update(self, motors: MotorController) -> None:
         pass
 
 
 class Path:
     def __init__(self, *args: Task):
-        self.path: Task = args
+        self.path: Tuple[Task, ...] = args

@@ -4,13 +4,13 @@ import quaternion
 import traceback
 from typing import Callable
 
-from motor_registry import MotorController
+from pi.library.motor_controller import MotorController
 from sensor_interface import SensorInterface
 from mission import Path
 from logger import Logger, LogLevel
 
 class AUV:
-    def __init__(self, *, 
+    def __init__(self, *,
                  motor_controller: MotorController, # the object to control the motors with
                  sensors: SensorInterface,          # the interface for sensor data
                  pin_kill: Callable,                # an emergency kill function; should disable all motors via pins
@@ -29,18 +29,18 @@ class AUV:
         self.motor_controller = motor_controller
         self.sensors = sensors
         self.pin_kill = pin_kill
-        
+
         self.logger = Logger(console, logging)
 
         self.motor_controller.log = self.logger.create_sourced_logger("MOTOR")
         self.sensors.log = self.logger.create_sourced_logger("SENSOR")
-        self.sensors.depth_sensor.log = self.logger.create_sourced_logger("DEPTH")
+        self.sensors.depth.log = self.logger.create_sourced_logger("DEPTH")
         self.sensors.imu.log = self.logger.create_sourced_logger("IMU")
 
-        self.logger.log(f"Sub enabled")
+        self.logger.log("Sub enabled")
         self.motor_controller.overview()
         self.sensors.overview()
-        
+
         self.motor_controller.initialize()
         self.sensors.initialize()
 
@@ -52,9 +52,10 @@ class AUV:
         self.logger.log("Beginning path")
 
         try:
-            for task in mission:
+            for task in mission.path:
                 self.logger.log(f"Beginning task {task.name}")
-                task.update(self.motor_controller, self.sensors)
+                while(not task.finished):
+                    self.motor_controller.travel(task.update(self.sensors) + self.pid_manager.wanted())
 
         except:
             self.logger.log(traceback.format_exc())
@@ -81,6 +82,6 @@ class AUV:
                 else:
                     self.logger.log(f"{method_name.capitalize()} failed", level=LogLevel.ERROR)
             else:
-                self.logger.log("All kills ineffective. Manual intervention required", level=LogLevel.WARNING)
+                self.logger.log("All kills ineffective. Manual intervention required", level=LogLevel.ERROR)
             
             self.logger.end()
