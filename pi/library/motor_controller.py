@@ -126,18 +126,18 @@ class MotorController:
             return None
 
 
-# from inertia import *
+from inertia import *
 
 
-# test = MotorController(inertia=InertiaBuilder(Cuboid(10, np.array([0, 0, 0]), 5, 5, 1)).moment_of_inertia(), 
-#                        motors=[
-#                            Motor(np.array([1, 1, 0]), np.array([-1, 1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
-#                            Motor(np.array([-1, 1, 0]), np.array([1, 1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
-#                            Motor(np.array([-1, 1, 0]), np.array([-1, -1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
-#                            Motor(np.array([1, 1, 0]), np.array([1, -1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1))
-#                            ]
-#                        )
+test = MotorController(inertia=InertiaBuilder(Cuboid(10, np.array([0, 0, 0]), 5, 5, 1)).moment_of_inertia(), 
+                        motors=[
+                            Motor(np.array([1, 1, 0]), np.array([-1, 1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
+                            Motor(np.array([-1, 1, 0]), np.array([1, 1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
+                            Motor(np.array([-1, 1, 0]), np.array([-1, -1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
+                            Motor(np.array([1, 1, 0]), np.array([1, -1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1))
+                            ]
+                        )
 
-# solution = test.solve_motor_system(np.array([0.1, 1, 0, 0, 0, 20]))
+solution = test.solve_motor_system(np.array([0.1, 1, 0, 0, 0, 20]))
 
-# print(solution)
+print(solution)

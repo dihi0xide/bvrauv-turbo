@@ -25,8 +25,8 @@ class InertiaGeometry(ABC):
     
     def rotate_to_vector(self, inertia, current_facing, to_face):
         
-        if(np.isclose(current_facing, to_face)):
-            return self.inertia_tensor()
+        if(np.all(np.isclose(current_facing, to_face))):
+            return inertia
             
         rotation_axis = np.cross(to_face, current_facing)
         rotation_axis /= np.linalg.norm(rotation_axis)
