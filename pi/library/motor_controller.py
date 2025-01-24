@@ -74,57 +74,54 @@ class MotorController:
                 self.motor_matrix = np.hstack((self.motor_matrix, new_vector))
 
     def solve_motor_system(self, wanted_vector, M_big=1000):
-
-        # this code sucks! it definitely can be turned into a way simpler math problem, which would
-        # make it way faster and more readable
-
         start = time.time()
         M = self.motor_matrix
-
-        n = M.shape[1]  # number of variables
+        n = M.shape[1]  # Number of variables
         
+        # Create the problem
         problem = LpProblem("Motor_Solver", LpMinimize)
-        
+
+        # Define variables
         u = [LpVariable(f'u_{i}', -1, 1) for i in range(n)]
-        b1 = [LpVariable(f'b1_{i}', 0, 1, LpBinary) for i in range(n)]  # negative range
-        b2 = [LpVariable(f'b2_{i}', 0, 1, LpBinary) for i in range(n)]  # positive range
-        
-        
         abs_u = [LpVariable(f'abs_u_{i}') for i in range(n)]
+        
+        # Add constraints for absolute values
         for i in range(n):
             problem += abs_u[i] >= u[i]
             problem += abs_u[i] >= -u[i]
-        
+
+        # Add constraints for force/torque matching
         for i in range(len(wanted_vector)):
-            problem += lpSum(M[i,j] * u[j] for j in range(n)) == wanted_vector[i]
-        
+            problem += lpSum(M[i, j] * u[j] for j in range(n)) == wanted_vector[i]
+
+        # Add constraints for motor bounds
         for i in range(n):
             motor = self.motors[i]
             bottom = motor.lower_bound
             top = motor.upper_bound
 
-            problem += b1[i] + b2[i] <= 1
-            
-            problem += u[i] >= bottom.min * b1[i] + top.min * b2[i]
-            problem += u[i] <= bottom.max * b1[i] + top.max * b2[i]
-            
-            problem += u[i] <= (max(abs(bottom.max), abs(top.max))) * (b1[i] + b2[i])
-            problem += u[i] >= (-max(abs(bottom.min), abs(top.min))) * (b1[i] + b2[i])
-        
-        problem += lpSum([M_big * (b1[i] + b2[i]) + abs_u[i] for i in range(n)])
+            problem += u[i] >= bottom.min
+            problem += u[i] <= top.max
 
+        # Objective: Minimize activation magnitudes
+        problem += lpSum([M_big * abs_u[i] for i in range(n)])
+
+        # Solve the problem
         status = problem.solve(PULP_CBC_CMD(msg=False))
-        
         length = (time.time() - start) * 1000
 
         if LpStatus[status] == "Optimal":
             activation_vector = np.array([value(u[i]) for i in range(n)])
-            self.log(f"Succesfully solved target vector {wanted_vector} with activation vector {activation_vector} in {length} milliseconds")
+            self.log(
+                f"Successfully solved target vector {wanted_vector} with activation vector {activation_vector} in {length} milliseconds"
+            )
             return activation_vector
         else:
-            self.log(f"Failed to solve target vector {wanted_vector} after {length} milliseconds", level=LogLevel.ERROR)
+            self.log(
+                f"Failed to solve target vector {wanted_vector} after {length} milliseconds",
+                level=LogLevel.ERROR,
+            )
             return None
-
 
 from inertia import *
 
