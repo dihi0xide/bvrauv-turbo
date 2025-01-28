@@ -62,7 +62,7 @@ class MotorController:
         
         level = LogLevel.INFO if problems == 0 else LogLevel.WARNING
 
-        self.log(f"Motors initalized with {problems} problem{"" if problems==1 else "s"}", level=level)
+        self.log(f"Motors initalized with {problems} problem{'' if problems==1 else 's'}", level=level)
     
     def reset_motor_matrix(self):
         for i, motor in enumerate(self.motors):
@@ -125,16 +125,16 @@ class MotorController:
 
 from inertia import *
 
+while True:
+    test = MotorController(inertia=InertiaBuilder(Cuboid(10, np.array([0, 0, 0]), 5, 5, 1)).moment_of_inertia(), 
+                            motors=[
+                                Motor(np.array([1, 1, 0]), np.array([-1, 1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
+                                Motor(np.array([-1, 1, 0]), np.array([1, 1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
+                                Motor(np.array([-1, 1, 0]), np.array([-1, -1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
+                                Motor(np.array([1, 1, 0]), np.array([1, -1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1))
+                                ]
+                            )
 
-test = MotorController(inertia=InertiaBuilder(Cuboid(10, np.array([0, 0, 0]), 5, 5, 1)).moment_of_inertia(), 
-                        motors=[
-                            Motor(np.array([1, 1, 0]), np.array([-1, 1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
-                            Motor(np.array([-1, 1, 0]), np.array([1, 1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
-                            Motor(np.array([-1, 1, 0]), np.array([-1, -1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1)),
-                            Motor(np.array([1, 1, 0]), np.array([1, -1, 0]), lambda _: 0, lambda _: 0, Motor.Range(1, 0.1), Motor.Range(-0.1, -1))
-                            ]
-                        )
+    solution = test.solve_motor_system(np.array([0.1, 1, 0, 0, 0, 20]))
 
-solution = test.solve_motor_system(np.array([0.1, 1, 0, 0, 0, 20]))
-
-print(solution)
+    print(solution)

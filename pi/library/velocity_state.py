@@ -1,9 +1,11 @@
-from typing import Self
+from typing import TypeVar, Type
 import numpy as np
+
+FV = TypeVar("FV", bound="VelocityState")
 
 class VelocityState:
     
-    def from_vector(self, vec: np.ndarray) -> Self:
+    def from_vector(self, vec: np.ndarray) -> FV:
         """
         Create a velocity state to follow a given 3d vector. Does not affect rotation.\n
         The magnitude controls the speed of the sub. Refer to your motor definitions for the speeds.
@@ -18,7 +20,7 @@ class VelocityState:
             sideway = scaled_vec[2]
         )
 
-    def from_quaternion() -> Self:
+    def from_quaternion() -> FV:
         # TODO learn quaternions!
         pass
 

@@ -1,7 +1,12 @@
 import os
 import time
 
-from enum import StrEnum
+from enum import Enum
+
+class StrEnum(str, Enum):
+    def __str__(self) -> str:
+        return str(self.value)
+
 
 class LogLevel(StrEnum):
     INFO = "    Info   "
@@ -20,7 +25,7 @@ class Logger:
 
         if(self.file):
             os.makedirs("logs", exist_ok=True)
-            self.location = f"logs/{time.asctime().replace(" ", "-")}"
+            self.location = f"logs/{time.asctime().replace(' ', '-')}"
             self.stream = open(self.location, "w", encoding="utf-8")
 
         self.log("   date   h:m:s:microsecond   source        level       message\n", info=False)
